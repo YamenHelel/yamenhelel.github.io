@@ -1,0 +1,378 @@
+<!DOCTYPE HTML>
+<!--
+	YAMEN HELEL
+	Statistician and data scientist | yamen.hlel@gmail.com
+	Personal portfolio
+-->
+<html>
+	<head>
+		<title>Yamen Helel Portfolio</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo">Home</a>
+					</header>
+				
+				<!-- Nav -->
+					<nav id="nav">
+						<ul class="links">
+							
+							<li class="active"><a href="#">Articles</a></li>
+							 
+						</ul>
+						<ul class="icons">
+							<li><a href="https://www.linkedin.com/in/yamenhelel/ " target="_blank" rel="noopener noreferrer" class="icon brands alt fa-linkedin" ><span class="label">Twitter</span></a></li>
+							<li><a href="https://twitter.com/HelelYamen" target="_blank" rel="noopener noreferrer" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+							<li><a href="https://www.facebook.com/helel.yamen" target="_blank" rel="noopener noreferrer" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+							<li><a href="https://github.com/YamenHelel" target="_blank" rel="noopener noreferrer" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Post -->
+							<section class="post">
+								<header class="major">
+									<span class="date">February , 2023</span>
+									<h2>
+										<span style="direction: rtl;unicode-bidi: embed; font-size: 24.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #1f618d ; lang="AR-SA">
+											 رسم الخرائط<br />
+											والرسوم وتحريكها  <br />
+											باستخدام برنامج 
+											R
+										</span>
+									</h2>
+									<p style=" direction: rtl; unicode-bidi: embed;">
+										<span style=" line-height: 2em; color: #1f618d ; lang="AR-SA">
+										ففي هذا المقال نستخدم الحزمة gganimate لرسم خريطة للمملكة العربية السعودية ثم تلوين المناطق الإدارية بحسب قيمة مؤشر معدل البطالة و اضهار المؤشر لفترات زمنية مختلفة.
+										</span>
+									</p>
+									<p>By Yamen Helel.</p>
+								</header>
+								<div  class="image main" ><img src="images/Article_2_cover.jpg" alt=""  /></div>
+								<div>
+									<p style="text-align: right; direction: rtl; unicode-bidi: embed;" >
+										<span style="font-size: 16.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #1f618d ; lang="AR-SA">
+											المحور الأول : تحريك الرسوم  <br />
+										</span>
+										<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+											أولا يتم تحميل الحزم اللازمة لرسم الخرائط وتحريكها وحفظ الصور (بعد تثبيتها)<br />
+										</span>
+									</p>
+								</div>
+								<div>
+									<p >
+										<pre><code > 
+											# تحميل المكتبات ----
+
+											library(tidyverse)
+											library(anytime)
+											library(plotly)
+											library(gganimate)
+											library(transformr)
+											library(gifski)
+											library(png)
+											library(usa)
+											library(usmap)
+										</code></pre>
+									</p>
+								</div>
+								<div>
+									<p style="text-align: right; direction: rtl; unicode-bidi: embed;">
+										<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+											ثانيا استدعاء ملف البيانات المستخدم في الرسوم. <br />
+											كل الأرقام في هذا المقال تم سحبها من موقع الهيئة العامة للإحصاء من الرابط التالي:  
+											<a href="https://www.stats.gov.sa/ar/814" target="_blank" rel="noopener noreferrer" ><span class="label">نشرة القوى العاملة</span></a><br />
+											ويحتوي ملف الاكسل المستخدم على سلسلة زمنية لمعدل البطالة من سنة 2017 الى سنة 2022 بحسب المناطق الإدارية. تم تبويبها في أعمدة كالتالي : <br />
+											العمود الأول : Region ، أسماء المناطق<br />
+											العمود الثاني: HASC_1، كود المنطقة<br />
+											العمود الثالث :  Quarter ، التاريخ الموافق للشهر الأخير من الربع<br />
+											العمود الرابع : Saudi_Total ، معدل البطالة للسعوديين<br />
+											العمود الخامس : Total ، معدل البطالة اجمالي<br />
+											<br />
+											<div class=""><center><img src="images/excel_fileSAR.JPG" alt="" /></center></div>
+										</span>
+									</p>
+									<p style="text-align: right; direction: rtl; unicode-bidi: embed;">
+										<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+											لعملية استدعاء ملف الاكسل سوف نستخدم الدالة  read_xlsx() من المكتبة Readxl على النحو التالي:<br />
+										</span>
+									</p>
+								</div>
+								<div >
+									<pre> <code> 
+										# قراءة ملف الاكسل الذي يحتوي على البيانات
+										KSA_dataset <- readxl::read_xlsx("./UR by region Saudi Arabia.xlsx")
+										 %>% select(Region, HASC_1, Quarter, Saudi_Total)
+									</code></pre>
+								</div>
+								<div>
+									<p style="text-align: right; direction: rtl; unicode-bidi: embed;">
+										<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+											المرحلة الموالية هي رسم خطي لتطور معدل البطالة في منطقة الرياض على سبيل المثال، لذلك سيتم التعديل على البيانات باختيار منطقة الرياض، ترتيب البيانات بحسب التاريخ وإضافة وصف يحتوي على اسم المنطقة والتاريخ.
+										</span>
+									</p>
+								</div>
+								<div >
+									<pre> <code> 
+										KSA_dataset_single <- KSA_dataset %>% 
+										# فلترة على منطقة الرياض
+										filter(Region == "Riyadh") %>%
+										# اضافة توصيف لاسم المنطقة والتاريخ   
+										mutate(label_region = str_c(Region,"\n",Quarter)) %>%
+										#  ترتيب البيانات بحسب التاريخ  
+										arrange(Quarter) 
+									</code></pre>
+								</div>
+								<p style="text-align: right; direction: rtl; unicode-bidi: embed;">
+									<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+										الآن سوف نمر لبناء الكود الذي سيمكننا من انجاز الرسمة، وبما أننا سنعيد الرسمة لأكثر من مرة، فان الكود سيكون على شكل دالة Function يتم استدعائها مع تخصيص البيانات المراد رسمها.									</span>
+								</p>
+								<div >
+									<pre> <code> 
+										# هذه الدالة تستخدم مجموعم من البيانات كمدخل 
+										# وتقوم برسم رسمة خطية
+										plot_line <- function(data) {
+											plot <- data %>%
+											ggplot(aes(x = Quarter , y = Saudi_Total,  color = Region)) +
+											geom_point(aes(text = label_region), alpha = 0.5, show.legend = FALSE, size = 4) + 
+											geom_line(aes(x = Quarter, y = Saudi_Total, color = Region), linewidth = 1, alpha = 0.5)+ 
+											theme_classic() + 
+											theme(
+											text = element_text(family = "mukta"),
+											plot.title = element_text(face = "bold",
+																		size = 14,
+																		hjust = .5),
+											plot.subtitle = element_text(size = 12,
+																		hjust = .5),
+											plot.caption = element_text(size = 8),
+											axis.text.x = element_text(size = 10),
+											axis.text.y = element_text(size = 10),
+											axis.title.x = element_text(size = 8),
+											axis.title.y = element_text(size = 8)
+											) +
+											
+											ggrepel::geom_text_repel(aes(x = Quarter, y = Saudi_Total, label = label_region, color = Region), nudge_x = 0.5, size = 5)  +
+											ylim(c(0,27))+
+											
+											labs(title = 'KSA Unemployment rate by region - 2017 to 2022', 
+												caption = "",
+												x = 'Quarters', 
+												y = 'Unemployment rate') 
+										
+										return(plot)    
+										}
+									</code></pre>
+								</div>
+								<p style="text-align: right; direction: rtl; unicode-bidi: embed;">
+									<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+										بعد تعريف الدالة ، يتم استدعاؤها بمجموعة بيانات منطقة الرياض و انشاء الرسمة.									</span>
+								</p>
+								<div >
+									<pre> <code> 
+										## استدعاء الدالة باستخدام مجموعة البيانات لمنطقة الرياض
+										plot <- plot_line(data = KSA_dataset_single)
+										# الرسمة
+										ggplotly(plot, tooltip = "text")
+									</code></pre>
+								</div>
+								
+								<p style="text-align: right; direction: rtl; unicode-bidi: embed;" >
+									<span style="font-size: 16.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #1f618d ; lang="AR-SA">
+										النتيجة في الصورة التالية:<br />
+									</span>
+								</p>
+								<div class=""><center><img src="images/Riyadh_line.png" alt="" /></center></div>
+								<p style="text-align: right; direction: rtl; unicode-bidi: embed;" >
+									<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+										الكود الموالي، يقوم برسم أكثر من منطقة إدارية واحدة في رسمة خطية واحدة، لاحظ انه يتم استخدام نفس الدالة لكن مع تغيير مجموعة البيانات:
+									</span>
+								</p>
+								<div >
+									<pre> <code>
+										## اعادة نفس الرسمة لأكثر من منطقة ادارية
+
+										KSA_dataset_multiple <- KSA_dataset %>% 
+										   # اختيار المناطق الادارية
+										  filter(Region %in% c("Riyadh", "Madinah", 'Tabuk')) %>%
+										  # اضافة توصيف لاسم المنطقة والتاريخ     
+										  mutate(label_region = str_c(Region,"\n",Quarter))  %>%  arrange(Quarter) 
+										
+										plot <- plot_line(data = KSA_dataset_multiple)
+										ggplotly(plot, tooltip = "text")
+										
+									</code></pre>
+								</div>
+								<div class=""><center><img src="images/Line_plot_multiple.png" alt="" /></center></div>
+								<p style="text-align: right; direction: rtl; unicode-bidi: embed;" >
+									<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA"> </br>
+										الآن، سوف نستخدم الحزمة gganimate التي تم استدعاؤها سابقا في أول الكود لكي نقوم بتحريك الرسمة. بحيث تظهر تدريجيا الخط بحسب التطور الزمني للبيانات.									</span>
+								</p>
+								<div >
+									<pre> <code> 
+										## تحريك الرسمة لكل المناطق حسب التسلسل الزمني للبيانات ----
+										plot_line_animated <- plot +
+										transition_reveal(Quarter) + 
+										ease_aes('linear')
+										animate(plot_line_animated, duration =10, fps = 10, width = 900, height = 600, 
+												renderer = gifski_renderer())
+										## حفظ الرسمة ----
+										anim_save(file = "./plot_line_animated.gif")
+									</code></pre>
+								</div>
+								<div class=""><center><img src="images/plot_line_animated.gif" alt="" /></center></div>
+
+								<div>
+									<p style="text-align: right; direction: rtl; unicode-bidi: embed;" >
+										<span style="font-size: 16.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #1f618d ; lang="AR-SA">
+											المحور الثاني : تحريك الخرائط   <br />
+										</span>
+										<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+											في هذا الجزء من المقال، سوف نشرح طريقة تحريك الخرائط. بمعنى اطهار البيانات على خريطة لفترات زمنية مختلفة.<br />
+											لاحظ ان الحزم اللازمة لرسم الخرائط وتحريكها وحفظ الصور  تم استدعائها سابقا في أول المقال.<br />
+											لرسم الخريطة المتحركة ، سنحتاج مجموعة البيانات كعنصر أول ثم ملف خريطة المملكة العربية السعودية كعنصر ثاني. <br />
+											في مقال سابق كنت شرحت بالتفصيل كيفية رسم الخرائط. اذا اردت معرفة المزيد يمكنك زيارة رابط المقال
+											<a href="https://yamenhelel.github.io/Maps_with_R_tun.html" target="_blank" rel="noopener noreferrer" ><span class="label">من هنا.</span></a>
+											 <br />
+											
+											الكود التالي يستدعي البيانات ثم الخريطة ولن أحتاج لاعادة الشرح طالما شرح سابقا.<br />
+										</span>
+									</p>
+								</div>
+								<div >
+									<pre> <code>
+										#استدعاء بيانات الخريطة
+										ksa_plot= getData(name="GADM", country="SAU", level=1)
+										plot(ksa_plot)
+										
+										ksa_plot_UR = fortify(ksa_plot,region = "HASC_1")
+										i=match(ksa_plot_UR$id,KSA_dataset$HASC_1)
+										ksa_plot_UR$Unemployment_rate=KSA_dataset $Saudi_Total[i]
+										
+										colnames(ksa_plot_UR)
+										
+										
+										#رسم الخريطة مع البيانات لأرباع مختلفة
+										
+										mapa_animado_5 <- KSA_dataset %>%
+										  filter( Quarter  == as.Date("2022-09-01") | Quarter  == as.Date("2017-03-01") | Quarter  == as.Date("2019-09-01") ) %>%
+										  right_join(ksa_plot_UR , by = c("HASC_1"="id"), copy = TRUE) %>%
+										  ggplot(aes(x=long, y=lat, 
+													 group= group, 
+													 fill= Saudi_Total , inherit.aes = FALSE)) +
+										  geom_polygon(color = "white", 
+													   size = 0.01) +
+										  theme_void() +
+										 
+										  labs(title="معدل البطالة بحسب المناطق الادارية - المملكة العربية السعودية",
+											   subtitle = "{current_frame}",
+										  )  +
+										  theme(
+											plot.title = element_text(size = 12, hjust = 0.5),
+											plot.subtitle = element_text(size = 10, hjust = 0.5),
+											plot.caption = element_text(size = 8, hjust = 1),
+											legend.position = "bottom") +
+										  coord_fixed (ratio = 1.3) + 
+										  transition_manual(Quarter)
+										mapa_animado_5$labels$fill="معدل البطالة%"
+										mapa_animado_5
+										
+										animate(mapa_animado_4, duration =2,
+												fps = 3, 
+												height = 500, 
+												width = 700, renderer = gifski_renderer())
+										# حفظ الرسمة
+										anim_save(file = "./plot_map_animated.gif")
+										
+									</code></pre>
+								</div>
+								<div>
+									<p style="text-align: right; direction: rtl; unicode-bidi: embed;" >
+										<span style="font-size: 12.0pt; line-height: 2em; font-family: 'Hacen Saudi Arabia'; color: #000000 ; lang="AR-SA">
+											في النهاية، نتحصل على النتيجة التالية: خريطة للمملكة العربية السعودية تضهر تطور معدل البطالة بحسب المناطق الإدارية من الربع الأول 2017 الى الربع الثالث 2022<br />
+										</span>
+									</p>
+								</div>
+								<div class=""><center><img src="images/plot_map_animated.gif " alt="" /></center></div>
+								
+								<div class=""><center><img src="images/ " alt="" /></center></div
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<form method="post" action="#">
+								<div class="fields">
+									<div class="field">
+										<label for="name">Name</label>
+										<input type="text" name="name" id="name" />
+									</div>
+									<div class="field">
+										<label for="email">Email</label>
+										<input type="text" name="email" id="email" />
+									</div>
+									<div class="field">
+										<label for="message">Message</label>
+										<textarea name="message" id="message" rows="3"></textarea>
+									</div>
+								</div>
+								<ul class="actions">
+									<li><input type="submit" value="Send Message" /></li>
+								</ul>
+							</form>
+						</section>
+						<section class="split contact">
+							<section class="alt">
+								<h3>Address</h3>
+								<p>Riyadh,<br />
+								Saudi Arabia</p>
+							</section>
+							<section>
+								<h3>Phone</h3>
+								<p> (966) 54788 9344 </p>
+							</section>
+							<section>
+								<h3>Email</h3>
+								<p> yamen.hlel@gmail.com </p>
+							</section>
+							<section>
+								<h3>Social</h3>
+								<ul class="icons alt">
+									<li><a href="https://www.linkedin.com/in/yamenhelel/ " target="_blank" rel="noopener noreferrer" class="icon brands alt fa-linkedin" ><span class="label">Twitter</span></a></li>
+							<li><a href="https://twitter.com/HelelYamen" target="_blank" rel="noopener noreferrer" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+							<li><a href="https://www.facebook.com/helel.yamen" target="_blank" rel="noopener noreferrer" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+							<li><a href="https://github.com/YamenHelel" target="_blank" rel="noopener noreferrer" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>								</ul>
+							</section>
+						</section>
+					</footer>
+
+				<!-- Copyright -->
+					<div id="copyright">
+						<ul><li>&copy; 2023</li><li>Designed by : YAMEN HELEL</li></ul>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
